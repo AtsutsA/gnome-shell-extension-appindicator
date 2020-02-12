@@ -209,16 +209,33 @@ var AppIndicator = class AppIndicators_AppIndicator {
 
             // all these can mean that the icon has to be changed
             if (property == 'Status' || property.substr(0, 4) == 'Icon' || property.substr(0, 13) == 'AttentionIcon')
-                this.emit('icon')
+                if (this.id !== 'discord1')
+                    this.emit('icon');
+                else
+                    Util.Logger.debug("Not updating discord icon");
 
             // same for overlays
-            if (property.substr(0, 11) == 'OverlayIcon')
-                this.emit('overlay-icon')
+            if (property.substr(0, 11) == 'OverlayIcon') {
+                if (this.id !== 'discord1')
+                    this.emit('overlay-icon');
+                else
+                    Util.Logger.debug("Not updating discord icon");
+            }
+
+
 
             // this may make all of our icons invalid
             if (property == 'IconThemePath') {
-                this.emit('icon')
-                this.emit('overlay-icon')
+                if (this.id !== 'discord1') {
+                    this.emit('icon');
+                    this.emit('overlay-icon');
+                }
+                else
+                {
+                    Util.Logger.debug("Not updating discord icon")
+                }
+
+
             }
 
             // the label will be handled elsewhere
@@ -507,6 +524,7 @@ class AppIndicators_IconActor extends Shell.Stack {
 
     _updateOverlayIcon() {
         // remove old icon
+        Util.Logger.debug('Update overlay ' + this.name);
         if (this._overlayIcon.get_child()) {
             let child = this._overlayIcon.get_child()
 

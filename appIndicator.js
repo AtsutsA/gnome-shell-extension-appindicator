@@ -28,6 +28,8 @@ const Mainloop = imports.mainloop
 const Extension = imports.misc.extensionUtils.getCurrentExtension();
 const Signals = imports.signals
 
+const UpdateBlacklist = ["discord1", "Google Play Music Desktop Player1"];
+
 const DBusMenu = Extension.imports.dbusMenu;
 var IconCache = Extension.imports.iconCache;
 const Util = Extension.imports.util;
@@ -209,30 +211,29 @@ var AppIndicator = class AppIndicators_AppIndicator {
 
             // all these can mean that the icon has to be changed
             if (property == 'Status' || property.substr(0, 4) == 'Icon' || property.substr(0, 13) == 'AttentionIcon')
-                if (this.id !== 'discord1')
-                    this.emit('icon');
+                if (UpdateBlacklist.includes(this.id))
+                    Util.Logger.debug("Not updating blacklisted icon");
                 else
-                    Util.Logger.debug("Not updating discord icon");
+                    this.emit('icon');
 
             // same for overlays
             if (property.substr(0, 11) == 'OverlayIcon') {
-                if (this.id !== 'discord1')
-                    this.emit('overlay-icon');
+                if (UpdateBlacklist.includes(this.id))
+                    Util.Logger.debug("Not updating blacklisted icon");
                 else
-                    Util.Logger.debug("Not updating discord icon");
+                    this.emit('overlay-icon');
             }
 
 
 
             // this may make all of our icons invalid
             if (property == 'IconThemePath') {
-                if (this.id !== 'discord1') {
-                    this.emit('icon');
-                    this.emit('overlay-icon');
-                }
+                if (UpdateBlacklist.includes(this.id))
+                    Util.Logger.debug("Not updating blacklisted icon");
                 else
                 {
-                    Util.Logger.debug("Not updating discord icon")
+                    this.emit('icon');
+                    this.emit('overlay-icon');
                 }
 
 
@@ -524,7 +525,6 @@ class AppIndicators_IconActor extends Shell.Stack {
 
     _updateOverlayIcon() {
         // remove old icon
-        Util.Logger.debug('Update overlay ' + this.name);
         if (this._overlayIcon.get_child()) {
             let child = this._overlayIcon.get_child()
 
